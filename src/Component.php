@@ -108,7 +108,7 @@ class Component {
         // Load framework textdomain.
         add_action( 'after_setup_theme', [ $this, 'loadTextdomain' ], 95 );
 
-        // Overrides the load textdomain function for the 'hybrid-core' domain.
+        // Overrides the load textdomain function for the 'backdrop' domain.
         add_filter( 'override_load_textdomain', [ $this, 'overrideLoadTextdomain' ], 5, 3 );
 
         // Filter the textdomain mofile to allow child themes to load the parent theme translation.
@@ -220,14 +220,14 @@ class Component {
      * @access public
      */
     public function loadTextdomain() {
-        load_textdomain( 'hybrid-core', '' );
+        load_textdomain( 'backdrop', '' );
     }
 
     /**
-     * Overrides the load textdomain functionality when `hybrid-core` is
+     * Overrides the load textdomain functionality when `backdrop` is
      * the domain in use. The purpose of this is to allow theme translations
      * to handle the framework's strings.  What this function does is sets
-     * the `hybrid-core` domain's translations to the theme's. That way,
+     * the `backdrop` domain's translations to the theme's. That way,
      * we're not loading multiple of the same MO files.
      *
      * @since  1.0.0
@@ -243,7 +243,7 @@ class Component {
         global $l10n;
 
         // Check if the domain is one of our framework domains.
-        if ( 'hybrid-core' === $domain ) {
+        if ( 'backdrop' === $domain ) {
 
             // Get the theme's textdomain.
             $theme_textdomain = $this->parentTextdomain();
