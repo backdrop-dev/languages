@@ -1,0 +1,32 @@
+{
+	"name": "backdrop-dev/languages",
+	"description": "Languages deals with loading textdomains and locale-specific function files, an add-on for the Hybrid Core framework.",
+	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"wordpress"
+	],
+	"authors": [
+		{
+			"name": "Benjamin Lu",
+			"email": "benlumia007@gmail.com",
+			"homepage": "https://luthemes.com",
+			"role": "Developer"
+		}
+	],
+	"homepage": "https://github.com/backdrop-dev/languages",
+	"support": {
+		"issues": "https://github.com/backdrop-dev/languages/issues"
+	},
+	"require": {
+		"php": ">=7.1",
+		"backdrop-dev/framework": "^1.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Backdrop\\Languages\\": "src/"
+		},
+		"files": [
+			"src/functions-helpers.php"
+		]
+	}
+}
