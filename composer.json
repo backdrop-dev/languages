@@ -1,6 +1,6 @@
 {
 	"name": "backdrop-dev/languages",
-	"description": "Languages deals with loading textdomains and locale-specific function files, an add-on for the Hybrid Core framework.",
+	"description": "Languages deals with loading textdomains and locale-specific function files, an add-on for the Backdrop framework.",
 	"license": "GPL-2.0-or-later",
 	"keywords": [
 		"wordpress"
