@@ -14,6 +14,8 @@
 
 namespace Backdrop\Languages;
 
+use Backdrop\Contracts\Bootable;
+
 /**
  * Language class.
  *
@@ -21,7 +23,7 @@ namespace Backdrop\Languages;
  *
  * @access public
  */
-class Component {
+class Component implements Bootable {
 
     /**
      * The parent theme's textdomain. Gets set to the value of the `Text
