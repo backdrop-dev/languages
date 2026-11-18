@@ -18,7 +18,8 @@
 		"issues": "https://github.com/backdrop-dev/languages/issues"
 	},
 	"require": {
-		"php": ">=7.4"
+		"php": ">=7.4",
+		"backdrop-dev/framework": "^2.0"
 	},
 	"autoload": {
 		"psr-4": {

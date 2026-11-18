@@ -34,7 +34,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\hierarchy' ) ) {
 
         $hier = [ $locale ];
 
-        if ( $region !== $locale ) {
+        if ( '' !== $region && $region !== $locale ) {
             $hier[] = $region;
         }
 
@@ -74,7 +74,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\region' ) ) {
     /**
      * Gets the region for the currently viewed page.  It strips the language from
      * the locale if needed.  Note that not all locales will have a region, so this
-     * might actually return the same thing as `language()`.
+     * returns an empty string when the locale has no region (for example, `en`).
      *
      * @since  1.0.0
      * @param  string $locale
@@ -86,6 +86,11 @@ if ( ! function_exists( __NAMESPACE__ . '\\region' ) ) {
 
         if ( ! $locale ) {
             $locale = is_admin() ? get_user_locale() : get_locale();
+        }
+
+        // No region without an underscore in the locale (for example, `en`).
+        if ( false === strpos( $locale, '_' ) ) {
+            return '';
         }
 
         return sanitize_key( preg_replace( '/.*?_(.*?)$/i', '$1', $locale ) );
