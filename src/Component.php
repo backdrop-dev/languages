@@ -84,7 +84,11 @@ class Component implements Bootable {
         $this->parent_textdomain = $theme->get( 'TextDomain' );
 
         $parent_domain = trim( $theme->get( 'DomainPath' ), '/' );
-        $this->parent_path = $parent_domain ? get_template_directory() . '/' . $parent_domain : '';
+        $template_dir  = get_template_directory();
+
+        // Fall back to the conventional `languages` folder when the
+        // theme does not set a `Domain Path` header.
+        $this->parent_path = $parent_domain ? $template_dir . '/' . $parent_domain : ( $template_dir ? $template_dir . '/languages' : '' );
 
         if ( ! is_child_theme() ) {
             return;
@@ -94,8 +98,9 @@ class Component implements Bootable {
 
         $this->child_textdomain = $child->get( 'TextDomain' );
 
-        $child_domain = trim( $child->get( 'DomainPath' ), '/' );
-        $this->child_path = $child_domain ? get_stylesheet_directory() . '/' . $child_domain : '';
+        $child_domain  = trim( $child->get( 'DomainPath' ), '/' );
+        $stylesheet_dir = get_stylesheet_directory();
+        $this->child_path = $child_domain ? $stylesheet_dir . '/' . $child_domain : ( $stylesheet_dir ? $stylesheet_dir . '/languages' : '' );
     }
 
     /**
@@ -108,11 +113,18 @@ class Component implements Bootable {
      */
     public function boot(): void {
 
-        // Load the locale functions files.
-        add_action( 'after_setup_theme', [ $this, 'loadLocaleFunctions' ], ~PHP_INT_MAX );
+        // Load the locale functions files. This must run before any other
+        // `after_setup_theme` callback, so it uses the lowest possible
+        // priority (PHP_INT_MIN, the same value `~PHP_INT_MAX` used to be).
+        add_action( 'after_setup_theme', [ $this, 'loadLocaleFunctions' ], PHP_INT_MIN );
 
         // Load framework textdomain.
         add_action( 'after_setup_theme', [ $this, 'loadTextdomain' ], 95 );
+
+        // Re-sync the framework textdomain for themes that load their own
+        // textdomain after the framework (priority 95) or early on `init`.
+        add_action( 'after_setup_theme', [ $this, 'syncTextdomain' ], 1000 );
+        add_action( 'init', [ $this, 'syncTextdomain' ], 0 );
 
         // Overrides the load textdomain function for the 'backdrop' domain.
         add_filter( 'override_load_textdomain', [ $this, 'overrideLoadTextdomain' ], 5, 3 );
@@ -235,6 +247,33 @@ class Component implements Bootable {
      */
     public function loadTextdomain() {
         load_textdomain( 'backdrop', '' );
+    }
+
+    /**
+     * Re-syncs the framework textdomain with the theme's translations.
+     * This covers themes that load their own textdomain after the
+     * framework textdomain was loaded (see `overrideLoadTextdomain()`):
+     * if the theme's translations are loaded by now, point the
+     * `backdrop` domain at them. Safe to call repeatedly; it does
+     * nothing until the theme's textdomain is loaded.
+     *
+     * @since  1.0.0
+     * @global array $l10n
+     * @return void
+     *
+     * @access public
+     */
+    public function syncTextdomain() {
+        global $l10n;
+
+        // Get the theme's textdomain.
+        $theme_textdomain = $this->parentTextdomain();
+
+        // If the theme's textdomain is loaded, use its translations instead.
+        if ( $theme_textdomain && isset( $l10n[ $theme_textdomain ] ) ) {
+
+            $l10n['backdrop'] = $l10n[ $theme_textdomain ];
+        }
     }
 
     /**
