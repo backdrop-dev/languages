@@ -82,7 +82,9 @@ class Component implements Bootable {
         $theme = wp_get_theme( get_template() );
 
         $this->parent_textdomain = $theme->get( 'TextDomain' );
-        $this->parent_path       = trim( $theme->get( 'DomainPath' ), '/' );
+
+        $parent_domain = trim( $theme->get( 'DomainPath' ), '/' );
+        $this->parent_path = $parent_domain ? get_template_directory() . '/' . $parent_domain : '';
 
         if ( ! is_child_theme() ) {
             return;
@@ -91,7 +93,9 @@ class Component implements Bootable {
         $child = wp_get_theme();
 
         $this->child_textdomain = $child->get( 'TextDomain' );
-        $this->child_path       = trim( $child->get( 'DomainPath' ), '/' );
+
+        $child_domain = trim( $child->get( 'DomainPath' ), '/' );
+        $this->child_path = $child_domain ? get_stylesheet_directory() . '/' . $child_domain : '';
     }
 
     /**
@@ -157,6 +161,10 @@ class Component implements Bootable {
 
         $file = ltrim( $file, '/' );
 
+        if ( '' === $this->parent_path ) {
+            return '';
+        }
+
         return $file ? "{$this->parent_path}/{$file}" : $this->parent_path;
     }
 
@@ -173,6 +181,10 @@ class Component implements Bootable {
     public function childPath( $file = '' ) {
 
         $file = ltrim( $file, '/' );
+
+        if ( '' === $this->child_path ) {
+            return '';
+        }
 
         return $file ? "{$this->child_path}/{$file}" : $this->child_path;
     }
